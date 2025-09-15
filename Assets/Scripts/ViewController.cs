@@ -24,19 +24,19 @@ public class ViewController : MonoBehaviour
 
         Vector3 moveVector = Vector3.zero;
 
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
         {
             moveVector += new Vector3(0f, 0.2f, 0f);
         }
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
             moveVector += new Vector3(-0.2f, 0f, 0f);
         }
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
             moveVector += new Vector3(0f, -0.2f, 0f);
         }
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
             moveVector += new Vector3(0.2f, 0f, 0f);
         }

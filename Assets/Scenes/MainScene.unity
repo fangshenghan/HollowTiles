@@ -302,6 +302,7 @@ MonoBehaviour:
   blackCoverScript: {fileID: 1951356794}
   borderSpriteRenderer: {fileID: 1322210610}
   bgmAudoioSource: {fileID: 39409709}
+  timeText: {fileID: 103439604}
 --- !u!1 &103439602
 GameObject:
   m_ObjectHideFlags: 0
@@ -368,8 +369,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4286499176
+  m_fontColor: {r: 0.40784314, g: 0.7882353, b: 0.49411765, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

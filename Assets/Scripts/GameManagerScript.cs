@@ -7,9 +7,10 @@ using UnityEngine;
 
 public class GameManagerScript : MonoBehaviour
 {
-    
-    public static GameManagerScript instance;
-    public static bool isPaused = false, hasWon = false;
+
+    internal static GameManagerScript instance;
+    internal static bool isPaused = false, hasWon = false;
+    internal static Action onWinAction;
 
     public GameObject backgroundTilesObject, frontTilesObject, selfRefPointObject;
     public GameObject tilePrefab, maskTilePrefab, refPointPrefab, warningPrefab;
@@ -21,16 +22,18 @@ public class GameManagerScript : MonoBehaviour
     private static List<RefPointScript> refPoints = new List<RefPointScript>();
 
     private static int[][] backgroundTiles = new int[][] { };
-    private static TileScript[][] tileObjects = new TileScript[][] { };
-
     private static int[][] targetTilePattern = new int[][] { };
+    private static TileScript[][] tileObjects = new TileScript[][] { };
 
     private static int currentLevel = 1, playerScore = 0;
     private static int mapWidth = 55, mapHeight = 21;
-    private static long startTime = 0, endTime = 0;
+
+    internal static long startTime = 0, endTime = 0;
 
     public void Awake()
     {
+        Application.targetFrameRate = 60;
+
         instance = this;
 
         startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -441,6 +444,13 @@ public class GameManagerScript : MonoBehaviour
             hasWon = true;
             endTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             blackCoverScript.SetTargetColor(Color.black);
+            bgmAudoioSource.loop = false;
+
+            if (onWinAction != null)
+            {
+                onWinAction.Invoke();
+            }
+
             yield break;
         }
 
@@ -489,7 +499,7 @@ public class GameManagerScript : MonoBehaviour
 
         float pitchFactor = 1f - normalizedDistance;
 
-        float targetPitch = Mathf.Lerp(0.75f, 2.0f, pitchFactor);
+        float targetPitch = Mathf.Lerp(0.75f, 2.5f, pitchFactor);
 
         bgmAudoioSource.pitch = Mathf.Lerp(bgmAudoioSource.pitch, targetPitch, Time.deltaTime * 3f);
     }
