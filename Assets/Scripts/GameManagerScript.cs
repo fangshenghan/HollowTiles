@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -8,13 +9,14 @@ public class GameManagerScript : MonoBehaviour
 {
     
     public static GameManagerScript instance;
-    public static bool isPaused = false;
+    public static bool isPaused = false, hasWon = false;
 
     public GameObject backgroundTilesObject, frontTilesObject, selfRefPointObject;
     public GameObject tilePrefab, maskTilePrefab, refPointPrefab, warningPrefab;
     public BlackCoverScript blackCoverScript;
     public SpriteRenderer borderSpriteRenderer;
     public AudioSource bgmAudoioSource;
+    public TextMeshProUGUI timeText;
 
     private static List<RefPointScript> refPoints = new List<RefPointScript>();
 
@@ -25,10 +27,13 @@ public class GameManagerScript : MonoBehaviour
 
     private static int currentLevel = 1, playerScore = 0;
     private static int mapWidth = 55, mapHeight = 21;
+    private static long startTime = 0, endTime = 0;
 
     public void Awake()
     {
         instance = this;
+
+        startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
         GenerateRandomBackgroundTiles();
         FindNewTargetPattern();
@@ -45,6 +50,8 @@ public class GameManagerScript : MonoBehaviour
         {
             UpdateBgmAudio();
         }
+
+        UpdateTimer();
     }
 
     private void GenerateRandomBackgroundTiles()
@@ -401,7 +408,6 @@ public class GameManagerScript : MonoBehaviour
         }
         else
         {
-            // 显示不匹配的瓦片为红色
             for (int i = 0; i < patternHeight; i++)
             {
                 for (int j = 0; j < patternWidth; j++)
@@ -432,6 +438,8 @@ public class GameManagerScript : MonoBehaviour
 
         if (currentLevel == 5)
         {
+            hasWon = true;
+            endTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             blackCoverScript.SetTargetColor(Color.black);
             yield break;
         }
@@ -486,5 +494,35 @@ public class GameManagerScript : MonoBehaviour
         bgmAudoioSource.pitch = Mathf.Lerp(bgmAudoioSource.pitch, targetPitch, Time.deltaTime * 3f);
     }
 
+    private void UpdateTimer()
+    {
+        long timeElapsed;
+        if (hasWon)
+        {
+            timeElapsed = endTime - startTime;
+        }
+        else
+        {
 
+            timeElapsed = DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime;
+        }
+        long totalSeconds = timeElapsed / 1000;
+
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+
+        long millis = timeElapsed % 1000;
+
+        timeText.text = string.Format("{0:00}:{1:00}:{2:00}", hours, minutes, seconds) + " <size=16>" + millis + "</size>";
+    }
+
+}
+
+public static class ColorExtensions
+{
+    public static Color WithAlpha(this Color color, float alpha)
+    {
+        return new Color(color.r, color.g, color.b, alpha);
+    }
 }
