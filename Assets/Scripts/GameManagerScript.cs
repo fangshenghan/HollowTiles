@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManagerScript : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class GameManagerScript : MonoBehaviour
     internal static bool isPaused = false, hasWon = false;
     internal static Action onWinAction;
 
-    public GameObject backgroundTilesObject, frontTilesObject, selfRefPointObject;
+    public GameObject backgroundTilesObject, frontTilesObject, selfRefPointObject, goBackBtn;
     public GameObject tilePrefab, maskTilePrefab, refPointPrefab, warningPrefab;
     public BlackCoverScript blackCoverScript;
     public SpriteRenderer borderSpriteRenderer;
@@ -445,6 +446,9 @@ public class GameManagerScript : MonoBehaviour
             endTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             blackCoverScript.SetTargetColor(Color.black);
             bgmAudoioSource.loop = false;
+            goBackBtn.SetActive(true);
+
+            StartCoroutine(LeaderboardManager.UploadRecordCo(endTime - startTime));
 
             if (onWinAction != null)
             {
@@ -513,18 +517,25 @@ public class GameManagerScript : MonoBehaviour
         }
         else
         {
-
             timeElapsed = DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime;
         }
-        long totalSeconds = timeElapsed / 1000;
 
+        timeText.text = GetFormattedGameTime(timeElapsed);
+    }
+
+    internal static string GetFormattedGameTime(long timeElapsed)
+    {
+        long totalSeconds = timeElapsed / 1000;
         long hours = totalSeconds / 3600;
         long minutes = (totalSeconds % 3600) / 60;
         long seconds = totalSeconds % 60;
-
         long millis = timeElapsed % 1000;
+        return string.Format("{0:00}:{1:00}:{2:00}", hours, minutes, seconds) + " <size=16>" + millis + "</size>";
+    }
 
-        timeText.text = string.Format("{0:00}:{1:00}:{2:00}", hours, minutes, seconds) + " <size=16>" + millis + "</size>";
+    public static void OnBackBtnClick()
+    {
+        SceneManager.LoadScene("StartScene");
     }
 
 }
