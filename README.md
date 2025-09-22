@@ -1,2 +1,2 @@
 # HollowTiles
-Random project
+Interesting game project for intermediate to game development class.
